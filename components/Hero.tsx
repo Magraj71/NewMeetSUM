@@ -14,7 +14,10 @@ const Hero = () => {
         summarizer.
       </p>
 
-      <Link href="/summarize">
+      <Link href="\Home">
+        <Button>Get Started</Button>
+      </Link>
+      <Link href="\Meet">
         <Button>Get Started</Button>
       </Link>
     </div>

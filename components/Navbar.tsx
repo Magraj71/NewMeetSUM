@@ -47,16 +47,16 @@ const Navbar = () => {
   return (
     <div className="bg-black text-white flex justify-between items-center py-5 px-4 md:px-8">
       <div className="text-lg font-semibold">
-        <Link href={"/"}>AISum</Link>
+        <Link href={"/"}>MeetSum</Link>
       </div>
 
       {isAuth ? (
         <div className="flex items-center space-x-4 md:space-x-6">
-          <Link href="/summarize" className="hover:underline">
+          <Link href="/Home/summarize" className="hover:underline">
             Summarize
           </Link>
 
-          <Link href="/history" className="hover:underline">
+          <Link href="/Home/history" className="hover:underline">
             History
           </Link>
 

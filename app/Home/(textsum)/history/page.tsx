@@ -101,7 +101,7 @@ const HistoryPage = () => {
                 </div>
               </div>
 
-              <Link href={`/summary/${summary.id}`}>
+              <Link href={`/Home/summary/${summary.id}`}>
                 <p className="line-clamp-3">{summary.summary}</p>
               </Link>
             </div>
