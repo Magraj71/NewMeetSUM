@@ -1,183 +1,120 @@
-// pages/meeting.tsx (or app/meeting/page.tsx)
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import io from "socket.io-client";
 
-const SIGNALING_SERVER = "http://localhost:3001"; // change to your server
-const ICE_CONFIG = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+import { useState } from "react";
+import MeetingClient from "@/components/MeetingClient";
 
-type PeerMap = {
-  [id: string]: {
-    pc: RTCPeerConnection;
-    streamEl?: HTMLVideoElement | HTMLAudioElement;
-    recorder?: MediaRecorder;
-    chunks: Blob[];
+export default function Home() {
+  const [roomId, setRoomId] = useState("");
+  const [joined, setJoined] = useState(false);
+
+  const handleJoin = () => {
+    if (roomId.trim()) {
+      setJoined(true);
+    }
   };
-};
 
-export default function MeetingPage() {
-  const localVideoRef = useRef<HTMLVideoElement | null>(null);
-  const socketRef = useRef<any>(null);
-  const peersRef = useRef<PeerMap>({});
-  const localStreamRef = useRef<MediaStream | null>(null);
-  const [roomId] = useState("my-room"); // generate / allow user input
-  const [isRecording, setIsRecording] = useState(false);
+  if (!joined) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#FAF3EB] via-[#F5ECE3] to-[#EFE4D8] flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 right-20 w-72 h-72 bg-[#8B6B61]/10 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-20 left-20 w-96 h-96 bg-[#6D4C41]/10 rounded-full blur-3xl animate-float-reverse"></div>
+          <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-[#D7CCC8]/20 rounded-full blur-3xl animate-pulse-slow"></div>
+        </div>
 
-  useEffect(() => {
-    socketRef.current = io(SIGNALING_SERVER);
-    const socket = socketRef.current;
+        <div className="relative z-10 bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-[#D7CCC8] p-8 w-full max-w-md hover:shadow-3xl transition-all duration-500">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-gradient-to-r from-[#8B6B61] to-[#6D4C41] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg border border-[#A1887F]">
+              <span className="text-2xl text-white">🎥</span>
+            </div>
+            <h1 className="text-3xl font-black text-[#3A2A1F] mb-2">
+              Video Meeting
+            </h1>
+            <p className="text-[#6B4B35] font-medium">
+              Start or join a video call with AI-powered features
+            </p>
+          </div>
+          
+          {/* Join Form */}
+          <div className="space-y-6">
+            <div>
+              <label htmlFor="roomId" className="block text-sm font-semibold text-[#5D4037] mb-3">
+                Room ID
+              </label>
+              <input
+                id="roomId"
+                type="text"
+                value={roomId}
+                onChange={(e) => setRoomId(e.target.value)}
+                placeholder="Enter your meeting room ID"
+                className="w-full px-4 py-3 bg-white border border-[#D7CCC8] rounded-xl focus:ring-2 focus:ring-[#8B6B61] focus:border-[#8B6B61] transition-all duration-300 placeholder-[#A1887F] text-[#5D4037] font-medium"
+                onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
+              />
+            </div>
+            
+            <button
+              onClick={handleJoin}
+              disabled={!roomId.trim()}
+              className="w-full bg-gradient-to-r from-[#8B6B61] to-[#6D4C41] hover:from-[#6D4C41] hover:to-[#5D4037] disabled:from-gray-400 disabled:to-gray-500 text-white py-3.5 px-4 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 disabled:scale-100 shadow-lg hover:shadow-xl border border-[#A1887F] disabled:border-gray-400 group"
+            >
+              <span className="flex items-center justify-center space-x-2">
+                <span>🚀 Join Meeting</span>
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
+            </button>
+          </div>
 
-    async function init() {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-      localStreamRef.current = stream;
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-        localVideoRef.current.muted = true;
-        await localVideoRef.current.play().catch(()=>{});
-      }
+          {/* Features Info */}
+          <div className="mt-8 p-6 bg-gradient-to-r from-[#8B6B61]/10 to-[#6D4C41]/10 rounded-2xl border border-[#D7CCC8]">
+            <h3 className="font-bold text-[#5D4037] mb-3 flex items-center space-x-2">
+              <div className="w-2 h-2 bg-gradient-to-r from-[#8B6B61] to-[#6D4C41] rounded-full animate-ping"></div>
+              <span>AI-Powered Features:</span>
+            </h3>
+            <ul className="text-sm text-[#6B4B35] space-y-2 font-medium">
+              <li className="flex items-center space-x-2">
+                <div className="w-1.5 h-1.5 bg-[#8B6B61] rounded-full"></div>
+                <span>Real-time transcription</span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <div className="w-1.5 h-1.5 bg-[#8B6B61] rounded-full"></div>
+                <span>Smart meeting summaries</span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <div className="w-1.5 h-1.5 bg-[#8B6B61] rounded-full"></div>
+                <span>Action item detection</span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <div className="w-1.5 h-1.5 bg-[#8B6B61] rounded-full"></div>
+                <span>Live chat with participants</span>
+              </li>
+            </ul>
+          </div>
 
-      socket.emit("join-room", roomId, "some-user");
+          {/* Quick Tips */}
+          <div className="mt-6 p-4 bg-white/60 rounded-xl border border-[#D7CCC8]">
+            <h4 className="font-semibold text-[#5D4037] text-sm mb-2">💡 Quick Tips:</h4>
+            <ul className="text-xs text-[#6B4B35] space-y-1 font-medium">
+              <li>• Create a unique room name for your meeting</li>
+              <li>• Share the room ID with participants</li>
+              <li>• Allow camera & microphone access</li>
+              <li>• Use headphones for better audio quality</li>
+            </ul>
+          </div>
+        </div>
 
-      socket.on("user-joined", async ({ socketId, userName }) => {
-        // create peer connection and offer
-        await createPeerConnection(socketId, true);
-      });
-
-      socket.on("signal", async (payload: any) => {
-        const { from, description, candidate } = payload;
-        let peer = peersRef.current[from];
-        if (!peer) {
-          await createPeerConnection(from, false);
-          peer = peersRef.current[from];
-        }
-        if (description) {
-          const pc = peer.pc;
-          const desc = new RTCSessionDescription(description);
-          await pc.setRemoteDescription(desc);
-          if (description.type === "offer") {
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
-            socket.emit("signal", { to: from, from: socket.id, description: pc.localDescription });
-          }
-        }
-        if (candidate) {
-          try {
-            await peer.pc.addIceCandidate(candidate);
-          } catch (e) {
-            console.error("addIceCandidate error", e);
-          }
-        }
-      });
-
-      socket.on("user-left", (id: string) => {
-        cleanupPeer(id);
-      });
-    }
-
-    init();
-
-    return () => {
-      socket.disconnect();
-      // cleanup pcs
-    };
-  }, [roomId]);
-
-  async function createPeerConnection(remoteId: string, isOfferer: boolean) {
-    const pc = new RTCPeerConnection(ICE_CONFIG);
-
-    pc.onicecandidate = (e) => {
-      if (e.candidate) {
-        socketRef.current.emit("signal", { to: remoteId, from: socketRef.current.id, candidate: e.candidate });
-      }
-    };
-
-    pc.ontrack = (event) => {
-      // event.streams[0] is the remote stream for this peer
-      const remoteStream = event.streams[0];
-      addRemoteStreamElement(remoteId, remoteStream);
-      // create recorder for remote audio only (separate file per speaker)
-      const audioOnly = new MediaStream(remoteStream.getAudioTracks());
-      const recorder = new MediaRecorder(audioOnly);
-      const chunks: Blob[] = [];
-      recorder.ondataavailable = (ev) => chunks.push(ev.data);
-      recorder.onstop = async () => {
-        const blob = new Blob(chunks, { type: "audio/webm" });
-        // upload with speaker metadata
-        await uploadRecording(blob, remoteId);
-      };
-      peersRef.current[remoteId] = { pc, streamEl: undefined, recorder, chunks };
-      if (isRecording) {
-        recorder.start(1000);
-      }
-    };
-
-    // add local tracks
-    localStreamRef.current?.getTracks().forEach((t) => pc.addTrack(t, localStreamRef.current!));
-
-    // create offer if needed
-    if (isOfferer) {
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
-      socketRef.current.emit("signal", { to: remoteId, from: socketRef.current.id, description: pc.localDescription });
-    }
-
-    // save peer
-    peersRef.current[remoteId] = peersRef.current[remoteId] ?? { pc, chunks: [] };
-  }
-
-  function addRemoteStreamElement(id: string, stream: MediaStream) {
-    // create a new audio element for remote
-    const audio = document.createElement("audio");
-    audio.autoplay = true;
-    audio.controls = true;
-    audio.srcObject = stream;
-    audio.id = `audio-${id}`;
-    document.getElementById("remotes")?.appendChild(audio);
-    if (peersRef.current[id]) peersRef.current[id].streamEl = audio;
-  }
-
-  async function uploadRecording(blob: Blob, speakerId: string) {
-    const fd = new FormData();
-    fd.append("file", blob, `${speakerId}_${Date.now()}.webm`);
-    fd.append("speakerId", speakerId);
-    fd.append("roomId", roomId);
-    await fetch("/api/upload-recording", { method: "POST", body: fd });
-  }
-
-  function cleanupPeer(id: string) {
-    const p = peersRef.current[id];
-    if (!p) return;
-    try { p.pc.close(); } catch {}
-    if (p.streamEl && p.streamEl.parentElement) p.streamEl.parentElement.removeChild(p.streamEl);
-    if (p.recorder && p.recorder.state !== "inactive") p.recorder.stop();
-    delete peersRef.current[id];
-  }
-
-  function startRecording() {
-    setIsRecording(true);
-    // start local recorder too (if you want local file)
-    // start all remote recorders
-    Object.values(peersRef.current).forEach((p) => {
-      if (p.recorder && p.recorder.state === "inactive") p.recorder.start(1000); // timeslice
-    });
-  }
-
-  function stopRecording() {
-    setIsRecording(false);
-    Object.values(peersRef.current).forEach((p) => {
-      if (p.recorder && p.recorder.state !== "inactive") p.recorder.stop();
-    });
-  }
-
-  return (
-    <div>
-      <h1>Meeting</h1>
-      <video ref={localVideoRef} autoPlay playsInline style={{ width: 300 }} />
-      <div id="remotes"></div>
-      <div>
-        <button onClick={startRecording} disabled={isRecording}>Start Recording</button>
-        <button onClick={stopRecording} disabled={!isRecording}>Stop Recording</button>
+        {/* Bottom Decoration */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center">
+          <p className="text-xs text-[#8B6B61] font-medium">
+            Powered by MeetSum AI Technology
+          </p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  return <MeetingClient roomId={roomId} />;
 }
