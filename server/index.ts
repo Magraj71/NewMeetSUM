@@ -1,11 +1,21 @@
+import dotenv from "dotenv";
+import path from "path";
+
+// Load .env from server/ folder
+dotenv.config({ path: path.resolve(__dirname, ".env") });
+
 import express from 'express';
 import { createServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import cors from 'cors';
 
+
 const app = express();
-const PORT = 5000;
-const CLIENT_ORIGIN = "http://localhost:3000";
+const PORT = Number(process.env.PORT);
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN;
+
+console.log("PORT from env:", process.env.PORT);
+console.log("PORT parsed:", PORT);
 
 app.use(cors({
   origin: CLIENT_ORIGIN,
