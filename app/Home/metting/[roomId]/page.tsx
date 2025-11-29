@@ -16,10 +16,12 @@ export default function MeetingPage({ params }: PageProps) {
   );
 }
 
-// FIX: Make generateMetadata async and await params
-export async function generateMetadata({ params }: { params: Promise<{ roomId: string }> }) {
-  const { roomId } = await params;
-  
+// ✅ FIXED: params is NOT a Promise
+export async function generateMetadata(
+  { params }: { params: { roomId: string } }
+) {
+  const { roomId } = params;
+
   return {
     title: `Meeting Room ${roomId} | Video Conference`,
     description: `Join meeting room ${roomId} for video calls and collaboration.`,
