@@ -41,6 +41,17 @@ export default function Home() {
     { number: "24/7", label: "Availability", icon: "🌐" }
   ];
 
+  // Function to handle meeting creation with random room ID
+  const createNewMeeting = () => {
+    const randomRoomId = `room-${Math.random().toString(36).substr(2, 9)}`;
+    router.push(`/Home/metting/${randomRoomId}`);
+  };
+
+  // Function to handle joining existing meeting
+  const joinMeeting = () => {
+    router.push('/Home/metting');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FAF3EB] via-[#F5ECE3] to-[#EFE4D8] overflow-hidden">
       {/* Enhanced Background Elements */}
@@ -101,33 +112,46 @@ export default function Home() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+              {/* Create New Meeting Button */}
               <button
-                onClick={() => router.push("/Home/metting")}
+                onClick={createNewMeeting}
                 className="group px-10 py-5 bg-gradient-to-r from-[#8B6B61] to-[#6D4C41] hover:from-[#6D4C41] hover:to-[#5D4037] text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 flex items-center space-x-4 border border-[#A1887F]"
               >
-                <span className="text-lg">🚀 Start Smart Meeting</span>
+                <span className="text-lg">🚀 Create New Meeting</span>
+                <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+              </button>
+              
+              {/* Join Meeting Button */}
+              <button
+                onClick={joinMeeting}
+                className="group px-10 py-5 bg-white/80 backdrop-blur-sm hover:bg-white text-[#5D4037] font-bold rounded-2xl border-2 border-[#8B6B61] hover:border-[#6D4C41] transition-all duration-500 hover:scale-105 flex items-center space-x-4 shadow-2xl hover:shadow-3xl"
+              >
+                <span className="text-lg">🚪 Join Meeting</span>
                 <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </button>
+            </div>
+
+            {/* Quick Action Buttons */}
+            <div className="flex gap-4 justify-center mb-8">
+              <button
+                onClick={() => router.push("/Home/audio-summarize")}
+                className="px-8 py-4 bg-white/80 backdrop-blur-sm hover:bg-white text-[#5D4037] font-semibold rounded-2xl border border-[#D7CCC8] hover:border-[#8B6B61] transition-all duration-500 hover:scale-105 flex items-center space-x-3 group shadow-lg hover:shadow-xl"
+              >
+                <span className="text-2xl">🎤</span>
+                <span>Audio Analysis</span>
+              </button>
               
-              <div className="flex gap-4">
-                <button
-                  onClick={() => router.push("/Home/audio-summarize")}
-                  className="px-8 py-5 bg-white/80 backdrop-blur-sm hover:bg-white text-[#5D4037] font-semibold rounded-2xl border border-[#D7CCC8] hover:border-[#8B6B61] transition-all duration-500 hover:scale-105 flex items-center space-x-3 group shadow-lg hover:shadow-xl"
-                >
-                  <span className="text-2xl">🎤</span>
-                  <span>Audio Analysis</span>
-                </button>
-                
-                <button
-                  onClick={() => router.push("/Home/summarize")}
-                  className="px-8 py-5 bg-white/80 backdrop-blur-sm hover:bg-white text-[#5D4037] font-semibold rounded-2xl border border-[#D7CCC8] hover:border-[#8B6B61] transition-all duration-500 hover:scale-105 flex items-center space-x-3 group shadow-lg hover:shadow-xl"
-                >
-                  <span className="text-2xl">📝</span>
-                  <span>Text Summary</span>
-                </button>
-              </div>
+              <button
+                onClick={() => router.push("/Home/summarize")}
+                className="px-8 py-4 bg-white/80 backdrop-blur-sm hover:bg-white text-[#5D4037] font-semibold rounded-2xl border border-[#D7CCC8] hover:border-[#8B6B61] transition-all duration-500 hover:scale-105 flex items-center space-x-3 group shadow-lg hover:shadow-xl"
+              >
+                <span className="text-2xl">📝</span>
+                <span>Text Summary</span>
+              </button>
             </div>
 
             {/* Stats */}
@@ -166,7 +190,13 @@ export default function Home() {
             {features.map((feature, index) => (
               <div
                 key={index}
-                onClick={() => router.push(feature.path)}
+                onClick={() => {
+                  if (feature.path === "/Home/metting") {
+                    createNewMeeting();
+                  } else {
+                    router.push(feature.path);
+                  }
+                }}
                 className="group relative bg-white/80 backdrop-blur-sm rounded-3xl border border-[#D7CCC8] hover:border-[#8B6B61] p-8 cursor-pointer transition-all duration-700 hover:scale-105 overflow-hidden shadow-xl hover:shadow-2xl"
               >
                 {/* Gradient Overlay */}
@@ -209,15 +239,26 @@ export default function Home() {
               <p className="text-[#6B4B35] text-lg mb-8 max-w-2xl mx-auto font-medium">
                 Join thousands of professionals who transformed their meeting culture with intelligent automation.
               </p>
-              <button
-                onClick={() => router.push("/Home/metting")}
-                className="px-12 py-4 bg-gradient-to-r from-[#8B6B61] to-[#6D4C41] hover:from-[#6D4C41] hover:to-[#5D4037] text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 flex items-center space-x-3 mx-auto group border border-[#A1887F]"
-              >
-                <span className="text-lg">🎬 Start Live Demo</span>
-                <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                </svg>
-              </button>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                  onClick={createNewMeeting}
+                  className="px-12 py-4 bg-gradient-to-r from-[#8B6B61] to-[#6D4C41] hover:from-[#6D4C41] hover:to-[#5D4037] text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 flex items-center space-x-3 group border border-[#A1887F]"
+                >
+                  <span className="text-lg">🎬 Start Instant Meeting</span>
+                  <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={joinMeeting}
+                  className="px-12 py-4 bg-white/80 backdrop-blur-sm hover:bg-white text-[#5D4037] font-bold rounded-2xl border-2 border-[#8B6B61] hover:border-[#6D4C41] transition-all duration-500 hover:scale-105 flex items-center space-x-3 shadow-2xl hover:shadow-3xl"
+                >
+                  <span className="text-lg">🚪 Join with Code</span>
+                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
